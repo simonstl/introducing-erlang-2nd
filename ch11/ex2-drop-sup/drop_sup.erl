@@ -2,7 +2,7 @@
 -behaviour(supervisor).
 -export([start_link/0]). % convenience call for startup
 -export([init/1]). % supervisor calls
--define(SERVER, ?MODULE). % macro that just defines this module as server
+-define(SERVER, ?MODULE). 
 
 
 %%% convenience method for startup
@@ -11,20 +11,17 @@ start_link() ->
 
 %%% supervisor callback
 init([]) ->
-         RestartStrategy = one_for_one,
-        MaxRestarts = 1, % one restart every
-        MaxSecondsBetweenRestarts = 5, % five seconds
+    SupFlags = #{strategy => one_for_one,
+                 intensity => 1,
+                 period => 5},
 
-        SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
+    Drop = #{id => 'drop',
+               start => {'drop', start_link, []},
+               restart => permanent,
+               shutdown => 5000,
+               type => worker,
+               modules => ['drop']},             
 
-        Restart = permanent, % or temporary, or transient
-        Shutdown = 2000, % milliseconds, could be infinity or brutal_kill
-        Type = worker, % could also be supervisor
-
-        Drop = {drop, {drop, start_link, []},
-                          Restart, Shutdown, Type, [drop]},
-
-        {ok, {SupFlags, [Drop]}}.
-
+     {ok, {SupFlags, [Drop]}}.
 
 %%% Internal functions (none here)
