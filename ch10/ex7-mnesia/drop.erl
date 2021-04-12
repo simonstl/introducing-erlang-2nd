@@ -14,7 +14,7 @@ handle_drops() ->
  end.
  
 fall_velocity(Planemo, Distance) when Distance >= 0 -> 
- {atomic, [P | T]} = mnesia:transaction(fun() -> mnesia:read(planemo,Planemo) end),
+ {atomic, [P | _]} = mnesia:transaction(fun() -> mnesia:read(planemo,Planemo) end),
   math:sqrt(2 * P#planemo.gravity * Distance).
 
 setup() ->
